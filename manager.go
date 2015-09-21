@@ -9,6 +9,7 @@ import (
 
 type Manager struct {
 	Context *cli.Context
+	Url     string
 }
 
 func (m *Manager) Manage() string {
@@ -38,9 +39,9 @@ func (m *Manager) Manage() string {
 }
 
 func (m *Manager) getList(status string) string {
-	resp, err := http.Get("http://api.supu.io/issues")
+	resp, err := http.Get(m.Url + "/issues")
 	if err != nil {
-		return "Couldn't connect to the server"
+		return "Couldn't connect to the server " + m.Url
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -49,14 +50,14 @@ func (m *Manager) getList(status string) string {
 }
 
 func (m *Manager) getDetails(issue string) string {
-	req, err := http.NewRequest("GET", "http://api.supu.io/issues/"+issue, nil)
+	req, err := http.NewRequest("GET", m.Url+"/issues/"+issue, nil)
 	req.Header.Add("X-AUTH-TOKEN", "token")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 
 	if err != nil {
-		return "Couldn't connect to the server"
+		return "Couldn't connect to the server " + m.Url
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -65,10 +66,10 @@ func (m *Manager) getDetails(issue string) string {
 }
 
 func (m *Manager) postComment() string {
-	resp, err := http.PostForm("http://api.supu.io/issues/1/comment",
+	resp, err := http.PostForm(m.Url+"/issues/1/comment",
 		url.Values{"key": {"Value"}, "id": {"123"}})
 	if err != nil {
-		return "Couldn't connect to the server"
+		return "Couldn't connect to the server" + m.Url
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
