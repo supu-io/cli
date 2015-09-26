@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/codegangsta/cli"
+	"github.com/fatih/color"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -12,44 +13,53 @@ type Manager struct {
 	Url     string
 }
 
-func (m *Manager) Manage() string {
+func (m *Manager) Manage() {
 	if len(m.Context.Args()) == 0 {
-		return "Not enough arguments"
+		color.Yellow("Not enough arguments")
 	}
 	switch m.Context.Args()[0] {
 	case "next":
-		return m.getList("todo")
+		m.getList("todo")
+		return
 	case "doing":
-		return m.getList("doing")
+		m.getList("doing")
+		return
 	case "details":
 		issue := m.Context.Args()[1]
-		return m.getDetails(issue)
+		m.getDetails(issue)
+		return
 	case "comment":
-		return m.postComment()
+		m.postComment()
+		return
 	case "start":
-		return m.moveTo("doing")
+		m.moveTo("doing")
+		return
 	case "review":
-		return m.moveTo("review")
+		m.moveTo("review")
+		return
 	case "uat":
-		return m.moveTo("uat")
+		m.moveTo("uat")
+		return
 	case "done":
-		return m.moveTo("done")
+		m.moveTo("done")
+		return
 	}
-	return "Unrecognized option"
+	color.Red("Unrecognized option")
 }
 
-func (m *Manager) getList(status string) string {
-	resp, err := http.Get(m.Url + "/issues")
+func (m *Manager) getList(status string) {
+	resp, err := http.Get(m.Url + "/issues?status=" + status)
 	if err != nil {
-		return "Couldn't connect to the server " + m.Url
+		color.Red("Couldn't connect to the server")
+		return
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 
-	return string(body)
+	printIssuesList(body)
 }
 
-func (m *Manager) getDetails(issue string) string {
+func (m *Manager) getDetails(issue string) {
 	req, err := http.NewRequest("GET", m.Url+"/issues/"+issue, nil)
 	req.Header.Add("X-AUTH-TOKEN", "token")
 
@@ -57,12 +67,13 @@ func (m *Manager) getDetails(issue string) string {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		return "Couldn't connect to the server " + m.Url
+		color.Red("Couldn't connect to the server")
+		return
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 
-	return string(body)
+	printIssueDetails(body)
 }
 
 func (m *Manager) postComment() string {
@@ -78,5 +89,8 @@ func (m *Manager) postComment() string {
 }
 
 func (m *Manager) moveTo(status string) string {
+	// req, err := http.NewRequest("PUT", m.Url+"/issues/"+issue, nil)
+	// req.Header.Add("X-AUTH-TOKEN", "token")
+
 	return ""
 }

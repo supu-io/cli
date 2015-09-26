@@ -35,7 +35,7 @@ func main() {
 	app.Usage = "make an explosive entrance"
 	app.Action = func(c *cli.Context) {
 		m := Manager{Context: c, Url: config.Supu.Url}
-		println(m.Manage())
+		m.Manage()
 	}
 
 	app.Run(os.Args)
