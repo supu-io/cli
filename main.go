@@ -15,7 +15,9 @@ type Config struct {
 	} `json:"supu-io"`
 }
 
-func getConfig(source string) *Config {
+// Get config defined on the .supu file
+func getConfig() *Config {
+	source := getConfigPath()
 	c := Config{}
 	file, err := os.Open(source)
 	if err != nil {
@@ -30,14 +32,74 @@ func getConfig(source string) *Config {
 	return &c
 }
 
+// Get the config path to use, default is .supu on the same
+// folder, but you can override it with a same named file on
+// your home
+func getConfigPath() string {
+	if _, err := os.Stat("~/.supu"); os.IsNotExist(err) {
+		return ".supu"
+	}
+	return "~/.supu"
+}
+
 func main() {
-	config := getConfig("config.json")
+	config := getConfig()
+	m := Manager{URL: config.Supu.URL}
 	app := cli.NewApp()
-	app.Name = "boom"
+	app.Name = "supu"
 	app.Usage = "make an explosive entrance"
-	app.Action = func(c *cli.Context) {
-		m := Manager{Context: c, URL: config.Supu.URL}
-		m.Manage()
+	app.Commands = []cli.Command{
+		{
+			Name:    "list",
+			Aliases: []string{"l"},
+			Usage:   "list :status:",
+			Action: func(c *cli.Context) {
+				status := c.Args()[1]
+				m.list(status)
+			},
+		},
+		{
+			Name:    "show",
+			Aliases: []string{"l"},
+			Usage:   "show :issue:",
+			Action: func(c *cli.Context) {
+				issue := c.Args()[1]
+				m.details(issue)
+			},
+		},
+		{
+			Name:    "comment",
+			Aliases: []string{"l"},
+			Usage:   "comment :issue: :body:",
+			Action: func(c *cli.Context) {
+				issue := c.Args()[1]
+				body := c.Args()[2]
+				m.comment(issue, body)
+			},
+		},
+		{
+			Name:    "move",
+			Aliases: []string{"m"},
+			Usage:   "move [back|forward] issue",
+			Subcommands: []cli.Command{
+				{
+					Name:  "back",
+					Usage: "Move the issue back on the workflow",
+					Action: func(c *cli.Context) {
+						issue := c.Args()[0]
+						m.move(issue, "back")
+					},
+				},
+				{
+					Name:  "forward",
+					Usage: "Move the issue back on the workflow",
+					Action: func(c *cli.Context) {
+						issue := c.Args()[0]
+						m.move(issue, "forward")
+					},
+				},
+			},
+		},
 	}
 	app.Run(os.Args)
 }

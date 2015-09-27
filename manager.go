@@ -5,52 +5,15 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/codegangsta/cli"
 	"github.com/fatih/color"
 )
 
 // Manager is a type to encapsulate issue actions
 type Manager struct {
-	Context *cli.Context
-	URL     string
+	URL string
 }
 
-// Manage is a method to execute actions on a single context
-func (m *Manager) Manage() {
-	if len(m.Context.Args()) == 0 {
-		color.Yellow("Not enough arguments")
-	}
-	switch m.Context.Args()[0] {
-	case "next":
-		m.getList("todo")
-		return
-	case "doing":
-		m.getList("doing")
-		return
-	case "details":
-		issue := m.Context.Args()[1]
-		m.getDetails(issue)
-		return
-	case "comment":
-		m.postComment()
-		return
-	case "start":
-		m.moveTo("doing")
-		return
-	case "review":
-		m.moveTo("review")
-		return
-	case "uat":
-		m.moveTo("uat")
-		return
-	case "done":
-		m.moveTo("done")
-		return
-	}
-	color.Red("Unrecognized option")
-}
-
-func (m *Manager) getList(status string) {
+func (m *Manager) list(status string) {
 	resp, err := http.Get(m.URL + "/issues?status=" + status)
 	if err != nil {
 		color.Red("Couldn't connect to the server")
@@ -62,7 +25,7 @@ func (m *Manager) getList(status string) {
 	printIssuesList(body)
 }
 
-func (m *Manager) getDetails(issue string) {
+func (m *Manager) details(issue string) {
 	req, err := http.NewRequest("GET", m.URL+"/issues/"+issue, nil)
 	req.Header.Add("X-AUTH-TOKEN", "token")
 
@@ -79,21 +42,18 @@ func (m *Manager) getDetails(issue string) {
 	printIssueDetails(body)
 }
 
-func (m *Manager) postComment() string {
-	resp, err := http.PostForm(m.URL+"/issues/1/comment",
-		url.Values{"key": {"Value"}, "id": {"123"}})
+func (m *Manager) move(issue string, spin string) {
+	color.Red("Moving " + spin + " issue " + issue)
+}
+
+func (m *Manager) comment(issue string, text string) {
+	resp, err := http.PostForm(m.URL+"/issues/"+issue+"/comment",
+		url.Values{"body": {text}})
 	if err != nil {
-		return "Couldn't connect to the server" + m.URL
+		color.Red("Couldn't connect to the server")
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 
-	return string(body)
-}
-
-func (m *Manager) moveTo(status string) string {
-	// req, err := http.NewRequest("PUT", m.Url+"/issues/"+issue, nil)
-	// req.Header.Add("X-AUTH-TOKEN", "token")
-
-	return ""
+	color.Green(string(body))
 }
