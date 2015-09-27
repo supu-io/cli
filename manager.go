@@ -1,18 +1,21 @@
 package main
 
 import (
-	"github.com/codegangsta/cli"
-	"github.com/fatih/color"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+
+	"github.com/codegangsta/cli"
+	"github.com/fatih/color"
 )
 
+// Manager is a type to encapsulate issue actions
 type Manager struct {
 	Context *cli.Context
-	Url     string
+	URL     string
 }
 
+// Manage is a method to execute actions on a single context
 func (m *Manager) Manage() {
 	if len(m.Context.Args()) == 0 {
 		color.Yellow("Not enough arguments")
@@ -48,7 +51,7 @@ func (m *Manager) Manage() {
 }
 
 func (m *Manager) getList(status string) {
-	resp, err := http.Get(m.Url + "/issues?status=" + status)
+	resp, err := http.Get(m.URL + "/issues?status=" + status)
 	if err != nil {
 		color.Red("Couldn't connect to the server")
 		return
@@ -60,7 +63,7 @@ func (m *Manager) getList(status string) {
 }
 
 func (m *Manager) getDetails(issue string) {
-	req, err := http.NewRequest("GET", m.Url+"/issues/"+issue, nil)
+	req, err := http.NewRequest("GET", m.URL+"/issues/"+issue, nil)
 	req.Header.Add("X-AUTH-TOKEN", "token")
 
 	client := &http.Client{}
@@ -77,10 +80,10 @@ func (m *Manager) getDetails(issue string) {
 }
 
 func (m *Manager) postComment() string {
-	resp, err := http.PostForm(m.Url+"/issues/1/comment",
+	resp, err := http.PostForm(m.URL+"/issues/1/comment",
 		url.Values{"key": {"Value"}, "id": {"123"}})
 	if err != nil {
-		return "Couldn't connect to the server" + m.Url
+		return "Couldn't connect to the server" + m.URL
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)

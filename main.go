@@ -2,14 +2,16 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/codegangsta/cli"
 	"log"
 	"os"
+
+	"github.com/codegangsta/cli"
 )
 
+// Config is the configuration struct for this app
 type Config struct {
 	Supu struct {
-		Url string `json:"url"`
+		URL string `json:"url"`
 	} `json:"supu-io"`
 }
 
@@ -34,9 +36,8 @@ func main() {
 	app.Name = "boom"
 	app.Usage = "make an explosive entrance"
 	app.Action = func(c *cli.Context) {
-		m := Manager{Context: c, Url: config.Supu.Url}
+		m := Manager{Context: c, URL: config.Supu.URL}
 		m.Manage()
 	}
-
 	app.Run(os.Args)
 }

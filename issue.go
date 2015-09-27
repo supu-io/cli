@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fatih/color"
 	"time"
+
+	"github.com/fatih/color"
 )
 
-// Internal representation of an issue
+// Issue is the internal representation of an issue
 type Issue struct {
 	ID       string    `json:"id"`
 	Number   int       `json:"number"`
@@ -20,8 +21,11 @@ type Issue struct {
 	Repo     string    `json:"repo"`
 	Owner    string    `json:"owner"`
 }
+
+// Comments is a collection/slice of comments
 type Comments []Comment
 
+// Comment is the internal representation of an issue comment
 type Comment struct {
 	ID        int       `json:"id,omitempty"`
 	Body      string    `json:"body,omitempty"`
@@ -33,6 +37,7 @@ type Comment struct {
 	IssueURL  string    `json:"issue_url,omitempty"`
 }
 
+// Issues is a collection/slice of issues
 type Issues []*Issue
 
 func printIssuesList(body []byte) {
