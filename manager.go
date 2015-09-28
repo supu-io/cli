@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -14,15 +15,19 @@ type Manager struct {
 }
 
 func (m *Manager) list(status string) {
-	resp, err := http.Get(m.URL + "/issues?status=" + status)
+	url := m.URL + "/issues?status=" + status
+	color.Blue(url)
+	resp, err := http.Get(url)
 	if err != nil {
-		color.Red("Couldn't connect to the server")
+		color.Red("Couldn't connect to the server" + m.URL)
 		return
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 
-	printIssuesList(body)
+	if err := printIssuesList(body); err != nil {
+		m.printError(body)
+	}
 }
 
 func (m *Manager) details(issue string) {
@@ -56,4 +61,14 @@ func (m *Manager) comment(issue string, text string) {
 	body, err := ioutil.ReadAll(resp.Body)
 
 	color.Green(string(body))
+}
+
+func (m *Manager) printError(body []byte) {
+	e := Error{}
+	err := json.Unmarshal(body, &e)
+	if err != nil {
+		color.Red(err.Error())
+	}
+
+	color.Red(e.Message)
 }

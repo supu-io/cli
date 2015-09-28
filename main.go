@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"os/user"
 
 	"github.com/codegangsta/cli"
+	"github.com/fatih/color"
 )
 
 // Config is the configuration struct for this app
@@ -36,10 +38,17 @@ func getConfig() *Config {
 // folder, but you can override it with a same named file on
 // your home
 func getConfigPath() string {
-	if _, err := os.Stat("~/.supu"); os.IsNotExist(err) {
-		return ".supu"
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
 	}
-	return "~/.supu"
+	home := usr.HomeDir + "/.supu"
+
+	if _, err := os.Stat(home); err == nil {
+		color.Green("Home found")
+		return home
+	}
+	return ".supu"
 }
 
 func main() {
@@ -54,8 +63,12 @@ func main() {
 			Aliases: []string{"l"},
 			Usage:   "list :status:",
 			Action: func(c *cli.Context) {
-				status := c.Args()[1]
-				m.list(status)
+				if len(c.Args()) == 0 {
+					color.Red("You should specify the status")
+				} else {
+					status := c.Args()[0]
+					m.list(status)
+				}
 			},
 		},
 		{

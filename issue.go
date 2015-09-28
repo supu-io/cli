@@ -40,18 +40,23 @@ type Comment struct {
 // Issues is a collection/slice of issues
 type Issues []*Issue
 
-func printIssuesList(body []byte) {
+type Error struct {
+	Message string `json:"error"`
+}
+
+func printIssuesList(body []byte) error {
 	issues := Issues{}
 	err := json.Unmarshal(body, &issues)
 	if err != nil {
-		color.Red(err.Error())
-		return
+		return err
 	}
 
 	for _, issue := range issues {
 		color.Blue("[ #" + issue.ID + "] " + issue.Title)
 		fmt.Println(issue.Body)
 	}
+
+	return nil
 }
 
 func printIssueDetails(body []byte) {
