@@ -76,8 +76,12 @@ func main() {
 			Aliases: []string{"l"},
 			Usage:   "show :issue:",
 			Action: func(c *cli.Context) {
-				issue := c.Args()[1]
-				m.details(issue)
+				if len(c.Args()) == 0 {
+					color.Red("You should specify the status")
+				} else {
+					issue := c.Args()[0]
+					m.details(issue)
+				}
 			},
 		},
 		{

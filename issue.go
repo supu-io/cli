@@ -22,6 +22,10 @@ type Issue struct {
 	Owner    string    `json:"owner"`
 }
 
+func (i *Issue) Path() string {
+	return i.Owner + "/" + i.Repo + "/" + i.ID
+}
+
 // Comments is a collection/slice of comments
 type Comments []Comment
 
@@ -52,8 +56,8 @@ func printIssuesList(body []byte) error {
 	}
 
 	for _, issue := range issues {
-		color.Blue("[ #" + issue.ID + "] " + issue.Title)
-		fmt.Println(issue.Body)
+		title := color.YellowString(issue.Title)
+		fmt.Printf("\n" + title + " - [" + issue.Path() + "]")
 	}
 
 	return nil
