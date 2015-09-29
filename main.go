@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"os/user"
@@ -45,7 +46,7 @@ func getConfigPath() string {
 	home := usr.HomeDir + "/.supu"
 
 	if _, err := os.Stat(home); err == nil {
-		color.Green("Home found")
+		fmt.Println("Config being overloaded by a .supu file on your home")
 		return home
 	}
 	return ".supu"

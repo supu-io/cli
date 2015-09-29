@@ -71,7 +71,7 @@ func printIssueDetails(body []byte) {
 		return
 	}
 
-	color.Blue("[ #" + issue.ID + "] " + issue.Title)
+	color.Blue("[ #" + issue.Path() + "] " + issue.Title)
 	fmt.Println(issue.Body)
 	fmt.Println(issue.Status)
 }

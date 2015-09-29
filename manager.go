@@ -16,7 +16,6 @@ type Manager struct {
 
 func (m *Manager) list(status string) {
 	url := m.URL + "/issues/search?status=" + status
-	color.Blue(url)
 	resp, err := http.Get(url)
 	if err != nil {
 		color.Red("Couldn't connect to the server" + m.URL)
