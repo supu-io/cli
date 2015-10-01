@@ -98,24 +98,18 @@ func main() {
 		{
 			Name:    "move",
 			Aliases: []string{"m"},
-			Usage:   "move [back|forward] issue",
-			Subcommands: []cli.Command{
-				{
-					Name:  "back",
-					Usage: "Move the issue back on the workflow",
-					Action: func(c *cli.Context) {
-						issue := c.Args()[0]
-						m.move(issue, "back")
-					},
-				},
-				{
-					Name:  "forward",
-					Usage: "Move the issue back on the workflow",
-					Action: func(c *cli.Context) {
-						issue := c.Args()[0]
-						m.move(issue, "forward")
-					},
-				},
+			Usage:   "move issue status",
+			Action: func(c *cli.Context) {
+				if len(c.Args()) == 0 {
+					color.Red("Not enough arguments")
+					return
+				}
+				issue := c.Args()[0]
+				status := ""
+				if len(c.Args()) > 1 {
+					status = c.Args()[1]
+				}
+				m.move(issue, status)
 			},
 		},
 	}

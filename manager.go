@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -46,8 +47,26 @@ func (m *Manager) details(issue string) {
 	printIssueDetails(body)
 }
 
-func (m *Manager) move(issue string, spin string) {
-	color.Red("Moving " + spin + " issue " + issue)
+func (m *Manager) move(issue string, status string) {
+	if status == "" {
+		m.printListOfPossibleStatuses()
+	} else {
+		var jsonStr = []byte(`{"status":"` + status + `"}`)
+		req, err := http.NewRequest("PUT", m.URL+"/issues/"+issue, bytes.NewBuffer(jsonStr))
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Add("X-AUTH-TOKEN", "token")
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+
+		if err != nil {
+			color.Red("Couldn't connect to the server")
+			return
+		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		color.Green(string(body))
+	}
 }
 
 func (m *Manager) comment(issue string, text string) {
@@ -70,4 +89,26 @@ func (m *Manager) printError(body []byte) {
 	}
 
 	color.Red(e.Message)
+}
+
+func (m *Manager) printListOfPossibleStatuses() {
+	req, err := http.NewRequest("GET", m.URL+"/statuses", nil)
+	req.Header.Add("X-AUTH-TOKEN", "token")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		color.Red("Couldn't connect to the server")
+		return
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	statuses := []string{}
+	json.Unmarshal(body, &statuses)
+	color.Yellow("You should provide a valid status to move your issue")
+	color.Yellow("valid statuses for this project are:")
+	for _, val := range statuses {
+		color.Yellow(" - " + val)
+	}
 }
