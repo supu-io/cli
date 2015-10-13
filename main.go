@@ -67,6 +67,18 @@ func getCurrentRepoName() string {
 	return repo
 }
 
+func getCurrentRepoDetails(c *cli.Context) (string, string) {
+	fullRepo := getCurrentRepoName()
+	repoParts := strings.Split(fullRepo, "/")
+	org := repoParts[0]
+	repo := ""
+	if c.Bool("org") == false {
+		repo = repoParts[1]
+	}
+
+	return org, repo
+}
+
 func main() {
 	config := getConfig()
 	m := Manager{URL: config.Supu.URL}
@@ -85,19 +97,12 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) {
-				if len(c.Args()) == 0 {
-					color.Red("You should specify the status")
-				} else {
-					status := c.Args()[0]
-					fullRepo := getCurrentRepoName()
-					repoParts := strings.Split(fullRepo, "/")
-					org := repoParts[0]
-					repo := ""
-					if c.Bool("org") == false {
-						repo = repoParts[1]
-					}
-					m.list(status, org, repo)
+				status := ""
+				if len(c.Args()) > 0 {
+					status = c.Args()[0]
 				}
+				org, repo := getCurrentRepoDetails(c)
+				m.list(status, org, repo)
 			},
 		},
 		{
@@ -106,7 +111,7 @@ func main() {
 			Usage:   "show :issue:",
 			Action: func(c *cli.Context) {
 				if len(c.Args()) == 0 {
-					color.Red("You should specify the status")
+					color.Red("You should specify the issue id")
 				} else {
 					issue := c.Args()[0]
 					m.details(issue)
