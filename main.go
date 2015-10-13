@@ -60,9 +60,15 @@ func getCurrentRepoName() string {
 	if err != nil {
 		return ""
 	}
-	parts := strings.Split(string(out), ":")
-	repo := parts[1]
-	repo = strings.Replace(repo, ".git\n", "", -1)
+	var repo string
+	if strings.Contains(string(out), "https://") == true {
+		parts := strings.Split(string(out), "/")
+		repo = parts[3] + "/" + parts[4]
+	} else {
+		parts := strings.Split(string(out), ":")
+		repo = parts[1]
+		repo = strings.Replace(repo, ".git\n", "", -1)
+	}
 
 	return repo
 }
@@ -73,7 +79,7 @@ func getCurrentRepoDetails(c *cli.Context) (string, string) {
 	org := repoParts[0]
 	repo := ""
 	if c.Bool("org") == false {
-		repo = repoParts[1]
+		repo = strings.Replace(repoParts[1], "\n", "", 1)
 	}
 
 	return org, repo
@@ -116,6 +122,15 @@ func main() {
 					issue := c.Args()[0]
 					m.details(issue)
 				}
+			},
+		},
+		{
+			Name:    "setup",
+			Aliases: []string{"st"},
+			Usage:   "setup",
+			Action: func(c *cli.Context) {
+				org, repo := getCurrentRepoDetails(c)
+				m.setup(org, repo)
 			},
 		},
 		{

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/fatih/color"
@@ -55,10 +56,20 @@ func printIssuesList(body []byte) error {
 		return err
 	}
 
+	prev := ""
 	for _, issue := range issues {
+		if issue.Repo != prev {
+			repo := strings.Replace(issue.Repo, "\n", "", 1)
+			if prev != "" {
+				fmt.Println("\n")
+			}
+			color.Blue("\nRepo: " + issue.Owner + "/" + repo + ":")
+			prev = issue.Repo
+		}
 		title := color.YellowString(issue.Title)
-		fmt.Printf("\n" + title + " - [#" + issue.Path() + "]")
+		fmt.Printf("\n - " + title + " - [#" + issue.Path() + "]")
 	}
+	fmt.Printf("\n\n")
 
 	return nil
 }

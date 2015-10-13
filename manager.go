@@ -72,6 +72,25 @@ func (m *Manager) move(issue string, status string) {
 	}
 }
 
+func (m *Manager) setup(org string, repo string) {
+	url := m.URL + "/setup?org=" + org + "&repo=" + repo
+
+	req, err := http.NewRequest("GET", url, nil)
+	req.Header.Add("X-AUTH-TOKEN", "token")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		color.Red("Couldn't connect to the server")
+		return
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+
+	println(string(body))
+}
+
 func (m *Manager) comment(issue string, text string) {
 	resp, err := http.PostForm(m.URL+"/issues/"+issue+"/comment",
 		url.Values{"body": {text}})
