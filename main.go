@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"os/user"
+	"strings"
 
 	"github.com/codegangsta/cli"
 	"github.com/fatih/color"
@@ -52,6 +54,19 @@ func getConfigPath() string {
 	return ".supu"
 }
 
+func getCurrentRepoName() string {
+	cmd := "git config --get remote.origin.url"
+	out, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		return ""
+	}
+	parts := strings.Split(string(out), ":")
+	repo := parts[1]
+	repo = strings.Replace(repo, ".git\n", "", -1)
+
+	return repo
+}
+
 func main() {
 	config := getConfig()
 	m := Manager{URL: config.Supu.URL}
@@ -63,12 +78,25 @@ func main() {
 			Name:    "list",
 			Aliases: []string{"l"},
 			Usage:   "list :status:",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "org",
+					Usage: "list issues at an organisation level",
+				},
+			},
 			Action: func(c *cli.Context) {
 				if len(c.Args()) == 0 {
 					color.Red("You should specify the status")
 				} else {
 					status := c.Args()[0]
-					m.list(status)
+					fullRepo := getCurrentRepoName()
+					repoParts := strings.Split(fullRepo, "/")
+					org := repoParts[0]
+					repo := ""
+					if c.Bool("org") == false {
+						repo = repoParts[1]
+					}
+					m.list(status, org, repo)
 				}
 			},
 		},

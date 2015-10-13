@@ -15,8 +15,11 @@ type Manager struct {
 	URL string
 }
 
-func (m *Manager) list(status string) {
-	url := m.URL + "/issues/search?status=" + status
+func (m *Manager) list(status string, org string, repo string) {
+	url := m.URL + "/issues/search?status=" + status + "&org=" + org
+	if repo != "" {
+		url = url + "&repo=" + repo
+	}
 	resp, err := http.Get(url)
 	if err != nil {
 		color.Red("Couldn't connect to the server" + m.URL)
