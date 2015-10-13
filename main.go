@@ -74,7 +74,7 @@ func main() {
 		},
 		{
 			Name:    "show",
-			Aliases: []string{"l"},
+			Aliases: []string{"s"},
 			Usage:   "show :issue:",
 			Action: func(c *cli.Context) {
 				if len(c.Args()) == 0 {
@@ -87,7 +87,7 @@ func main() {
 		},
 		{
 			Name:    "comment",
-			Aliases: []string{"l"},
+			Aliases: []string{"c"},
 			Usage:   "comment :issue: :body:",
 			Action: func(c *cli.Context) {
 				issue := c.Args()[1]
@@ -98,7 +98,7 @@ func main() {
 		{
 			Name:    "move",
 			Aliases: []string{"m"},
-			Usage:   "move issue status",
+			Usage:   "move :issue: :status:",
 			Action: func(c *cli.Context) {
 				if len(c.Args()) == 0 {
 					color.Red("Not enough arguments")
