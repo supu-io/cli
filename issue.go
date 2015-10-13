@@ -57,7 +57,7 @@ func printIssuesList(body []byte) error {
 
 	for _, issue := range issues {
 		title := color.YellowString(issue.Title)
-		fmt.Printf("\n" + title + " - [" + issue.Path() + "]")
+		fmt.Printf("\n" + title + " - [#" + issue.Path() + "]")
 	}
 
 	return nil
@@ -71,7 +71,14 @@ func printIssueDetails(body []byte) {
 		return
 	}
 
-	color.Blue("[ #" + issue.Path() + "] " + issue.Title)
-	fmt.Println(issue.Body)
-	fmt.Println(issue.Status)
+	if issue.Title != "" {
+		color.Blue("[ #" + issue.Path() + "] " + issue.Title)
+		fmt.Println(issue.Body)
+		fmt.Println(issue.Status)
+	} else {
+		err := Error{}
+		json.Unmarshal(body, &err)
+		color.Red("ERROR: " + err.Message)
+
+	}
 }
