@@ -91,6 +91,26 @@ func (m *Manager) setup(org string, repo string) {
 	println(string(body))
 }
 
+func (m *Manager) create(title string, desc string, org string, repo string) {
+	url := m.URL + "/issues"
+
+	var jsonStr = []byte(`{"title":"` + title + `","body":"` + desc + `","org":"` + org + `","repo":"` + repo + `"}`)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	req.Header.Add("X-AUTH-TOKEN", "token")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		color.Red("Couldn't connect to the server")
+		return
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+
+	printIssueDetails(body)
+}
+
 func (m *Manager) comment(issue string, text string) {
 	resp, err := http.PostForm(m.URL+"/issues/"+issue+"/comment",
 		url.Values{"body": {text}})

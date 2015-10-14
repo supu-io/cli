@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -24,7 +25,8 @@ type Issue struct {
 }
 
 func (i *Issue) Path() string {
-	return i.Owner + "/" + i.Repo + "/" + i.ID
+	s := strconv.Itoa(i.Number)
+	return i.Owner + "/" + i.Repo + "/" + s
 }
 
 // Comments is a collection/slice of comments
@@ -83,8 +85,9 @@ func printIssueDetails(body []byte) {
 	}
 
 	if issue.Title != "" {
-		color.Blue("[ #" + issue.Path() + "] " + issue.Title)
+		color.Green("[ #" + issue.Path() + "] " + issue.Title)
 		fmt.Println(issue.Body)
+		color.Blue(issue.URL)
 		fmt.Println(issue.Status)
 	} else {
 		err := Error{}

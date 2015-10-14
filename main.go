@@ -125,6 +125,21 @@ func main() {
 			},
 		},
 		{
+			Name:    "create",
+			Aliases: []string{"c"},
+			Usage:   "create :title: :body:",
+			Action: func(c *cli.Context) {
+				if len(c.Args()) < 2 {
+					color.Red("You should specify the title and body")
+				} else {
+					title := c.Args()[0]
+					body := c.Args()[1]
+					org, repo := getCurrentRepoDetails(c)
+					m.create(title, body, org, repo)
+				}
+			},
+		},
+		{
 			Name:    "setup",
 			Aliases: []string{"st"},
 			Usage:   "setup",
@@ -135,7 +150,7 @@ func main() {
 		},
 		{
 			Name:    "comment",
-			Aliases: []string{"c"},
+			Aliases: []string{"cm"},
 			Usage:   "comment :issue: :body:",
 			Action: func(c *cli.Context) {
 				issue := c.Args()[1]
