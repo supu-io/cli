@@ -1,47 +1,130 @@
-#Supu CLI
-Command line tool to manage your supu.io
+supu.io : supu
+=================
 
-###next
-It will show you a list of in todo issues
+This project is the entry point to supu.io, it will allow you to interact with the whole platform.
 
-###start [issue_id]
-Sends an issue to in progress. This command will:
+## Table of contents
 
-- [ ] Create a new feature branch.
-- [ ] Move the issue to in_progress on your issue tracker.
-- [ ] Assign to me the issue on your issue tracker.
+- [Quick start](#quick-start)
+- [Documentation](#documentation)
+- [Build status](#build-status)
+- [Bugs and feature requests](#bugs-and-feature-requests)
+- [TODO](#todo)
+- [Contributing](#contributing)
+- [Versioning](#versioning)
+- [Creators](#creators)
+- [Copyright and license](#copyright-and-license)
 
-### doing [ --user <user> ]
-It will show a list of in todo issues
+## Quick Start
 
-### details [issue_id]
-Show issue details for the given issue
+You need *go* installed:
 
-### comment [issue_id] <body>
-Will add a comment on the issue.
+```
+$ git clone git@github.com:supu-io/supu.git
+$ cd supu
+$ go build
+$ go install
+```
 
-### review [issue_id] [ --assign <user> ]
-Sends an issue to be review. This command will:
+Now you're ready to use it, check command inline help with:
+```
+$ supu
+```
+You will be able to setup your repo with command
+```
+cd ~/my_repo/
+supu st
+```
+this will create all necessary status on your issue tracker (Supported github atm)
 
-- [ ] Move to REVIEW the issue on the issue tracker
-- [ ] Push your local branch to remote repository
-- [ ] Will open a pull request against default branch
-- [ ] Assign the pull request to a reviewer
+When you're inside a git repo you can:
 
-### uat [issue_id] [ --assign <user> ]
-Sends an issue to be uated. This command will:
+List current repo issue:
+```
+supu l
+```
 
-- [ ] Move to UAT the issue on the issue tracker
-- [ ] Assign to somebody on the uat team
+List all org issues:
+```
+supu l --org
+```
 
-### done [issue_id] [ --assign <user> ]  [ --not-merge ]
-Sends the given issue to done. This command will:
+Show isue details
+```
+supu s org/repo/id
+```
 
-- [ ] Move to done column on the issue tracker
-- [ ] Assign to original developer on the issue tracker
-- [ ] Merge the pull request
+Move to a different status on your workflow
+```
+supu m org/repo/id doing
+```
+
+List all valid status
+```
+supu m org/repo/id
+```
 
 
+## Documentation
 
+Please check the whole Project Documentation repo at:
+[supu.io documentation](https://github.com/supu-io/docs)
 
+## Build status
 
+* Branch Master : [![Build Status Master](https://travis-ci.org/supu-io/supu.svg?branch=master)](https://travis-ci.org/supu-io/supu)
+
+## Bugs and feature requests
+
+Have a bug or a feature request? Please first read the
+[issue guidelines](https://github.com/supu-io/supu/blob/master/CONTRIBUTING.md#using-the-issue-tracker)
+and search for existing and closed issues. If your problem or idea is not
+addressed yet,
+[please open a new issue](https://github.com/supu-io/supu/issues/new).
+
+## TODO
+
+In order of precendence always work on existing
+[issues](https://github.com/supu-io/supu/issues) before spending hours on
+new things.
+
+If you have an idea for the future and it is not planed on the global
+[roadmap](http://github.com/supu-io/docs/roadmap.md) please check the
+[TODO list of ideas] on every project repo and add your idea there to be
+discussed.
+
+If you already added a new idea to one of the existing projects, go and ping
+to a developer and ask him to disscuss it. Good luck! ;)
+
+This project TODO idea list is here: [TODO.md](todo.md).
+
+## Contributing
+
+Please read through our
+[contributing guidelines](https://github.com/supu-io/supu/blob/master/CONTRIBUTING.md).
+Included are directions for opening issues, coding standards, and notes on
+development.
+
+Moreover, if your pull request contains patches or features, you must include
+relevant unit tests.
+
+## Versioning
+
+For transparency into our release cycle and in striving to maintain backward
+compatibility, supu-io/supu is maintained under
+[the Semantic Versioning guidelines](http://semver.org/). Sometimes we screw
+up, but we'll adhere to those rules whenever possible.
+
+## Creators
+
+**Adrià Cidre**
+
+- <https://twitter.com/adriacidre>
+- <https://github.com/adriacidre>
+
+## Copyright and License
+
+Code and documentation copyright 2015 supu.io authors.
+
+Code released under
+[the MIT license](https://github.com/supu-io/supu/blob/master/LICENSE).
