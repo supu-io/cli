@@ -75,7 +75,7 @@ func (m *Manager) move(issue string, status string) {
 func (m *Manager) setup(org string, repo string) {
 	url := m.URL + "/setup?org=" + org + "&repo=" + repo
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("POST", url, nil)
 	req.Header.Add("X-AUTH-TOKEN", "token")
 
 	client := &http.Client{}
